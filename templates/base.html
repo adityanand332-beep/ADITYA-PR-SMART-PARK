@@ -1,0 +1,6 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}ADITYA PR SMART PARK{% endblock %}</title><link rel="stylesheet" href="{{url_for('static',filename='style.css')}}"></head><body>
+<header><a class="brand" href="/">🅿 ADITYA PR <span>SMART PARK</span></a><nav><a href="/">Home</a><a href="/booking">Find Booking</a>
+{% if session.get('customer_id') %}<a href="/my-bookings">My Bookings</a><a href="/customer/logout">Customer Logout</a>
+{% elif session.get('admin') %}<a href="/admin">Admin Panel</a><a href="/logout">Admin Logout</a>
+{% else %}<a href="/customer/login">Customer Login</a><a href="/register">Sign Up</a><a href="/login">Admin Login</a>{% endif %}</nav></header>
+<main>{% with ms=get_flashed_messages(with_categories=true) %}{% for cat,msg in ms %}<div class="flash {{cat}}">{{msg}}</div>{% endfor %}{% endwith %}{% block content %}{% endblock %}</main><footer>© 2026 ADITYA PR SMART PARK · Smart Parking Management</footer></body></html>
