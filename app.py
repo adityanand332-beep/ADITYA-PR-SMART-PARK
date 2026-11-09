@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+import os
 import sqlite3, re, hashlib, secrets
 from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = "change-this-secret-key-before-deployment"
-DB = "parking.db"
+app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+DB = os.environ.get("DATABASE_PATH", "parking.db")
 DEFAULT_RATE = 20.0
 
 def db():
@@ -218,7 +219,9 @@ def lookup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        if request.form.get("username") == "admin" and request.form.get("password") == "admin123":
+        if (os.environ.get("ADMIN_USERNAME") and os.environ.get("ADMIN_PASSWORD")
+            and request.form.get("username") == os.environ["ADMIN_USERNAME"]
+            and request.form.get("password") == os.environ["ADMIN_PASSWORD"]):
             session.clear()
             session["admin"] = True
             return redirect(url_for("dashboard"))
@@ -328,6 +331,7 @@ def release(i):
     c.close()
     return redirect(url_for("dashboard"))
 
+init()
+
 if __name__ == "__main__":
-    init()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
